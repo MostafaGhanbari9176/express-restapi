@@ -6,6 +6,7 @@ const path = require('path')
 
 const multerSettings = require('./utils/multer-settings')
 const postRouter = require('./routes/post')
+const authRouter = require('./routes/auth')
 const utils = require('./utils/utils')
 
 const app = express()
@@ -16,6 +17,7 @@ app.use(multer(multerSettings).single('image'))
 app.use('/post/image', express.static(path.join(__dirname, 'public', 'images', 'posts')))
 
 app.use('/post', postRouter)
+app.use('/auth', authRouter)
 
 app.use((err, req, res, next) => {
     const statusCode = err.statusCode || 500
