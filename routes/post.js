@@ -18,4 +18,13 @@ router.post('/create', [
 
 router.get('/', controller.getPosts)
 
+router.put('/:postId', [
+    body('title').trim().isLength({min:5}),
+    body('content').trim().isLength({min:5})
+],
+    _error.validationError,
+    controller.updatePost)
+
+router.delete('/:postId', controller.deletePost)
+
 module.exports = router

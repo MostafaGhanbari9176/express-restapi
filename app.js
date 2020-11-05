@@ -6,13 +6,14 @@ const path = require('path')
 
 const multerSettings = require('./utils/multer-settings')
 const postRouter = require('./routes/post')
+const utils = require('./utils/utils')
 
 const app = express()
 
 app.use(bodyParser.json())
 app.use(multer(multerSettings).single('image'))
 
-app.use('post/image', express.static(path.join(__dirname, 'public', 'images', 'posts')))
+app.use('/post/image', express.static(path.join(__dirname, 'public', 'images', 'posts')))
 
 app.use('/post', postRouter)
 
@@ -21,9 +22,12 @@ app.use((err, req, res, next) => {
     const message = err.message || "message is empty"
     const errors = err.errors || []
 
+    if (req.file)
+        utils.deletePostImage(req.file.filename)
+
     res.status(statusCode).json({
-        message:message,
-        errors:errors
+        message: message,
+        errors: errors
     })
 
 })

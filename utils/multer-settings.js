@@ -14,6 +14,6 @@ module.exports = {
         if (file.mimetype === 'image/png')
             cb(null, true)
         else
-            cb(null, false)
+            cb(null, true)
     }
 }
