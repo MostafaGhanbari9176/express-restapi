@@ -102,6 +102,11 @@ exports.updatePost = (req, res, next) => {
                 err.statusCode = 404
                 throw err
             }
+            if (post.user.toString() !== req.userId) {
+                const err = new Error('access denied')
+                err.statusCode = 403
+                throw err
+            }
             if (req.file) {
                 utils.deletePostImage(post.imageName)
                 post.imageName = imageName
@@ -123,18 +128,30 @@ exports.updatePost = (req, res, next) => {
 exports.deletePost = (req, res, next) => {
     const postId = req.params.postId
     let imageName
+    let creator
+    let fetchedPost
     Post.findById(postId)
+        .populate('user')
         .then(post => {
             if (!post) {
                 const err = new Error('could not found post')
                 err.statusCode = 404
                 throw err
             }
-
+            if (post.user._id.toString() !== req.userId) {
+                const err = new Error('access denied')
+                err.statusCode = 403
+                throw err
+            }
+            creator = post.user
+            fetchedPost = post
             imageName = post.imageName
             return Post.findByIdAndDelete(postId)
 
         }).then(() => {
+        creator.posts.pull(fetchedPost)
+        return creator.save()
+    }).then(() => {
         res.status(200).json({
             message: "deleted successfully"
         })
