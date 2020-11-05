@@ -3,8 +3,11 @@ const {body} = require('express-validator/check')
 
 const _error = require('../utils/error-handel')
 const controller = require('../controllers/posts')
+const auth = require('../middleware/auth')
 
 const router = express.Router()
+
+router.use(auth.checkBearerToken)
 
 router.get('/:postId', controller.getPost)
 
@@ -19,9 +22,9 @@ router.post('/create', [
 router.get('/', controller.getPosts)
 
 router.put('/:postId', [
-    body('title').trim().isLength({min:5}),
-    body('content').trim().isLength({min:5})
-],
+        body('title').trim().isLength({min: 5}),
+        body('content').trim().isLength({min: 5})
+    ],
     _error.validationError,
     controller.updatePost)
 
