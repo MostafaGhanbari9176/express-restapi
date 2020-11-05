@@ -1,4 +1,5 @@
 const Post = require('../models/post')
+const User = require('../models/user')
 
 const _error = require('../utils/error-handel')
 const utils = require('../utils/utils')
@@ -8,18 +9,27 @@ exports.createPost = (req, res, next) => {
     const title = req.body.title
     const content = req.body.content
     const imageName = req.file.filename
+    const userId = req.userId
 
     const post = new Post({
-        title: title, content: content, imageName: imageName
+        title: title, content: content, imageName: imageName, user: userId
     })
 
     post.save()
         .then(post => {
+            return User.findById(req.userId)
+        })
+        .then(user => {
+            user.posts.push(post)
+            return user.save()
+        })
+        .then(() => {
             res.status(201).json({
                 message: "successfully created",
                 post: post
             })
-        }).catch(err => _error.catchError(err, next))
+        })
+        .catch(err => _error.catchError(err, next))
 
 }
 
@@ -28,14 +38,15 @@ exports.getPost = (req, res, next) => {
     const postId = req.params.postId
 
     Post.findById(postId)
+        .populate('user', 'name _id')
         .then(post => {
             if (!post) {
                 const err = new Error('could not found post')
                 err.statusCode = 404
                 throw err
             }
+
             res.status(200).json({
-                message: "post fetched",
                 post: post
             })
         })
@@ -53,6 +64,7 @@ exports.getPosts = (req, res, next) => {
         .then(count => {
             total = count
             return Post.find()
+                .populate('user', 'name')
                 .skip((page - 1) * perPage)
                 .limit(perPage)
         })
@@ -60,7 +72,7 @@ exports.getPosts = (req, res, next) => {
             res.status(200).json({
                 page: page,
                 perPage: perPage,
-                pages: Math.ceil(total/perPage) ,
+                pages: Math.ceil(total / perPage),
                 total: total,
                 posts: posts
             })
