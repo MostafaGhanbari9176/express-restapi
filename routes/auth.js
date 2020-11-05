@@ -3,7 +3,7 @@ const {body} = require('express-validator/check')
 
 const controller = require('../controllers/users')
 const User = require('../models/user')
-const _error = require('../utils/error-handel')
+const _error = require('../middleware/error-handel')
 const auth = require('../middleware/auth')
 
 const router = express.Router()

@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs')
 
 const User = require('../models/user')
-const _error = require('../utils/error-handel')
+const _error = require('../middleware/error-handel')
 
 exports.signup = (req, res, next) => {
 

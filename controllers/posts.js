@@ -1,7 +1,7 @@
 const Post = require('../models/post')
 const User = require('../models/user')
 
-const _error = require('../utils/error-handel')
+const _error = require('../middleware/error-handel')
 const utils = require('../utils/utils')
 
 exports.createPost = (req, res, next) => {

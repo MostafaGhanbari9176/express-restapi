@@ -1,7 +1,7 @@
 const express = require('express')
 const {body} = require('express-validator/check')
 
-const _error = require('../utils/error-handel')
+const _error = require('../middleware/error-handel')
 const controller = require('../controllers/posts')
 const auth = require('../middleware/auth')
 
